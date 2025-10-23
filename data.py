@@ -10,6 +10,9 @@ delta_vertical_displacement = 1 / 20 * vertical_displacement
 plate_separation = 0.0076 # Unit: m
 delta_plate_separation = 0.0001 # Unit: m
 
+delta_voltage = 5   # Unit: V
+delta_time = 0.500  # Unit s This is the total uncertainty of each time; but maybe use 1*sigma of the time distribution?
+
 ### Experimental data ###
 
 # Droplet 1

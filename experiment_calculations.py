@@ -89,12 +89,12 @@ class ExperimentCalculations:
         Calculates the velocity of the rise when the driving E-field points upwards.
         :return: A list of velocities in m/s, for each E-field strength.
         """
-        return self._v_up_calculation[:, 0]
+        return self._v_up_calculation[:, 1]
 
     @property
     def v_up_delta(self) -> np.ndarray:
         """Calculates the uncertainty of the raise velocities when the driving E-field points upwards."""
-        return self._v_up_calculation[:, 1]
+        return self._v_up_calculation[:, 3]
 
     @property
     def v_up_e_field(self) -> np.ndarray:
@@ -102,22 +102,32 @@ class ExperimentCalculations:
         return self._v_up_calculation[:, 0]
 
     @property
+    def v_up_e_field_delta(self) -> np.ndarray:
+        """Calculates the uncertainty in the driving E-field strength when the drop is rising."""
+        return self._v_up_calculation[:, 2]
+
+    @property
     def v_down(self) -> np.ndarray:
         """
         Calculates the velocity of the drop when the driving E-field points downwards.
         :return: A list of velocities in m/s, for each E-field strength.
         """
-        return self._v_down_calculation[:, 0]
+        return self._v_down_calculation[:, 1]
 
     @property
     def v_down_delta(self) -> np.ndarray:
         """Calculates the uncertainty of the drop velocities when the driving E-field points downwards."""
-        return self._v_down_calculation[:, 1]
+        return self._v_down_calculation[:, 3]
 
     @property
     def v_down_e_field(self) -> np.ndarray:
         """Calculates the driving E-field strength when the drop is falling."""
         return self._v_down_calculation[:, 0]
+
+    @cached_property
+    def v_down_e_field_delta(self) -> np.ndarray:
+        """Calculates the uncertainty in the driving E-field strength when the drop is falling."""
+        return self._v_down_calculation[:, 2]
 
     @cached_property
     def _v_up_calculation(self) -> np.ndarray:
@@ -134,14 +144,16 @@ class ExperimentCalculations:
         :param voltage_v_times_mapping: A mapping of voltage to velocity times.
         :return: A series of the velocity times and their uncertainties.
         """
-        series = np.zeros([len(voltage_v_times_mapping), 2])
+        series = np.zeros([len(voltage_v_times_mapping), 4])
         for i, (voltage, v_times) in enumerate(voltage_v_times_mapping.items()):
             e_field = cls._e_field(voltage)
             series[i, 0] = e_field
             series[i, 1] = cls._get_velocity(v_times)
-            series[i, 2] = cls._get_velocity_delta(v_times)
+            series[i, 2] = cls._e_field_delta(voltage)
+            series[i, 3] = cls._get_velocity_delta(v_times)
+        series = series[series[:, 0].argsort()]
         assert np.all(np.diff(series[:, 0]) > 0), "v_times must be sorted by E-field values"
-        return series[:, 1:3]
+        return series
 
     @classmethod
     def _e_field(cls, voltage: float):
@@ -151,7 +163,7 @@ class ExperimentCalculations:
     @classmethod
     def _e_field_delta(cls, voltage: float):
         """Calculates the E-field uncertainty."""
-        return (voltage / cls.delta_plate_separation *
+        return (voltage / cls.plate_separation *
                 math.sqrt((cls.delta_voltage / voltage) ** 2 + (cls.delta_plate_separation / cls.plate_separation) ** 2))
 
     @classmethod

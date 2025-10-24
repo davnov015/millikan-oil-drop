@@ -130,6 +130,13 @@ class ExperimentCalculations:
         return self._v_down_calculation[:, 2]
 
     @cached_property
+    def e_field_axis(self):
+        """Generate the E-field axis, suitable for plotting."""
+        min_e_field = min(self.v_down_e_field.min(), self.v_up_e_field.min())
+        max_e_field = max(self.v_down_e_field.max(), self.v_up_e_field.max())
+        return np.linspace(min_e_field, max_e_field, 100)
+
+    @cached_property
     def _v_up_calculation(self) -> np.ndarray:
         return self._v_calculation(self._v_up_times)
 

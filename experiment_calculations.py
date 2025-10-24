@@ -7,6 +7,7 @@ from data import (
     delta_plate_separation,
     delta_voltage
 )
+from analysis import SAvg
 import numpy as np
 import math
 
@@ -75,6 +76,24 @@ class ExperimentCalculations:
         """
         assert self.v_terminal < 0, "v_terminal must be negative (i.e. the signed velocity of the falling drop)"
         return self.__sqrt_term() - self.B / (2 * self.P)
+
+    @property
+    def drop_mass(self):
+        return 4 / 3 * math.pi * self.drop_radius ** 3 * self.rho
+
+    @property
+    def drop_mass_delta(self):
+        dMdA = 4 * math.pi * self.drop_radius ** 2 * self.rho
+        return dMdA * self.drop_radius_delta
+
+    def calculate_q(self, s_avg: SAvg):
+        return -s_avg.s_avg * self.drop_mass * self.g / self.v_terminal
+
+    def calculate_q_delta(self, s_avg: SAvg):
+        dQdS = -self.drop_mass * self.g / self.v_terminal
+        dQdM = s_avg.s_avg * self.g / self.v_terminal
+        dQdV0 = s_avg.s_avg * self.drop_mass * self.g / self.v_terminal
+        return math.sqrt((dQdS * s_avg.s_avg_delta) ** 2 + (dQdM * self.drop_mass_delta) ** 2 + (dQdV0 * self.v_terminal_delta) ** 2)
 
     @cached_property
     def drop_radius_delta(self) -> float:

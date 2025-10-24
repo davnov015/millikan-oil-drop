@@ -6,6 +6,7 @@ from data import droplet_2_v0_times, droplet_2_v_up_times, droplet_2_v_down_time
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
 from util import chi_squared, linear_fit, sci
+from analysis import SAvg, ECalculator
 import numpy as np
 
 
@@ -121,18 +122,46 @@ plt.show()
 
 # Slope calculations
 
-s_1_avg = ((popt_up_1[0] / (math.sqrt(pcov_up_1[0][0])) ** 2 + popt_down_1[0] / (math.sqrt(pcov_down_1[0][0])) ** 2)
-           / (1 / (math.sqrt(pcov_up_1[0][0])) ** 2 + 1 / (math.sqrt(pcov_down_1[0][0])) ** 2))
+s_1_avg_calc = SAvg(popt_up_1[0], popt_down_1[0], math.sqrt(pcov_up_1[0][0]), math.sqrt(pcov_down_1[0][0]))
+s_2_avg_calc = SAvg(popt_up_2[0], popt_down_2[0], math.sqrt(pcov_up_2[0][0]), math.sqrt(pcov_down_2[0][0]))
 
-s_1_avg_un = math.sqrt(1 / (1 / (math.sqrt(pcov_up_1[0][0])) ** 2 + 1 / (math.sqrt(pcov_down_1[0][0])) ** 2))
-
-s_2_avg = ((popt_up_2[0] / (math.sqrt(pcov_up_2[0][0])) ** 2 + popt_down_2[0] / (math.sqrt(pcov_down_2[0][0])) ** 2)
-           / (1 / (math.sqrt(pcov_up_2[0][0])) ** 2 + 1 / (math.sqrt(pcov_down_2[0][0])) ** 2))
-
-s_2_avg_un = math.sqrt(1 / (1 / (math.sqrt(pcov_up_2[0][0])) ** 2 + 1 / (math.sqrt(pcov_down_2[0][0])) ** 2))
-
-s_1_avg, s_1_avg_un, s_1_power = sci(s_1_avg, s_1_avg_un)
-s_2_avg, s_2_avg_un, s_2_power = sci(s_2_avg, s_2_avg_un)
+s_1_avg, s_1_avg_un, s_1_power = sci(s_1_avg_calc.s_avg, s_1_avg_calc.s_avg_delta)
+s_2_avg, s_2_avg_un, s_2_power = sci(s_2_avg_calc.s_avg, s_2_avg_calc.s_avg_delta)
 
 print(rf"Droplet 1: $s_{{avg}}$ = {s_1_avg} $\pm$ {s_1_avg_un} $\frac{{m^2}}{{sV}} * 10^{{{s_1_power:.0f}}}$")
 print(rf"Droplet 2: $s_{{avg}}$ = {s_2_avg} $\pm$ {s_2_avg_un} $\frac{{m^2}}{{sV}} * 10^{{{s_2_power:.0f}}}$")
+
+q1 = droplet_1_experiment.calculate_q(s_1_avg_calc)
+q1_delta = droplet_1_experiment.calculate_q_delta(s_1_avg_calc)
+
+q2 = droplet_2_experiment.calculate_q(s_2_avg_calc)
+q2_delta = droplet_2_experiment.calculate_q_delta(s_2_avg_calc)
+
+q1_d, q1_unc_d, q1_exp = sci(q1, q1_delta)
+q2_d, q2_unc_d, q2_exp = sci(q2, q2_delta)
+
+print(rf"Droplet 1: $q_1$ = {q1_d} $\pm$ {q1_unc_d} C $10^{{{q1_exp}}}$")
+print(rf"Droplet 2: $q_2$ = {q2_d}$ $\pm$ {q2_unc_d} C $10^{{{q2_exp}}}$")
+
+print(rf"Droplet 1: $\frac{{q_1}}{{n}}$ = {q1_d} $\pm$ {q1_unc_d} C $10^{{{q1_exp}}}$")
+print(rf"Droplet 2: $\frac{{q_2}}{{n}}$ = {q2_d}$ $\pm$ {q2_unc_d} C $10^{{{q2_exp}}}$")
+
+plt.close()
+fig, ax = plt.subplots()
+e_calculator = ECalculator(q1, q2, q1_delta, q2_delta)
+ax.errorbar(e_calculator.n, e_calculator.q1_per_n, yerr=e_calculator.q1_per_n_delta, fmt='x', capsize=7, ecolor='orange', elinewidth=0.7, label=r"$\frac{q_1}{n}$")
+ax.errorbar(e_calculator.n, e_calculator.q2_per_n, yerr=e_calculator.q2_per_n_delta, fmt='x', capsize=7, ecolor='red', elinewidth=0.7, label=r"$\frac{q_2}{n}$")
+ax.set_title("Integer Fractions of Droplet Charges")
+ax.set_xlabel(r"Integer Divisor $n$")
+ax.set_ylabel(r"Integer Fraction of Charge $\frac{q}{n}$")
+plt.legend()
+plt.show()
+
+e_value = SAvg(q1 / 5, q2 / 6, q1_delta / 5, q2_delta / 6)
+e_d, e_unc_d, e_exp = sci(e_value.s_avg, e_value.s_avg_delta)
+print(rf"e- value: e: {e_d} $\pm$ {e_unc_d} C $10^{{{e_exp}}}$")
+
+e_value = SAvg(q1 / 5, q2 / 7, q1_delta / 5, q2_delta / 7)
+e_d, e_unc_d, e_exp = sci(e_value.s_avg, e_value.s_avg_delta)
+print(rf"e- value: e: {e_d} $\pm$ {e_unc_d} C $10^{{{e_exp}}}$")
+

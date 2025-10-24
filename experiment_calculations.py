@@ -65,7 +65,7 @@ class ExperimentCalculations:
         return self._get_velocity_delta(self._v_terminal_times)
 
     def __sqrt_term(self):
-        return math.sqrt(self.B / (2 * self.P) ** 2 - 9 * self._eta * self.v_terminal / (2 * self.g * self.rho))
+        return math.sqrt((self.B / (2 * self.P)) ** 2 - 9 * self._eta * self.v_terminal / (2 * self.g * self.rho))
 
     @cached_property
     def drop_radius(self) -> float:
@@ -79,8 +79,8 @@ class ExperimentCalculations:
     @cached_property
     def drop_radius_delta(self) -> float:
         """Calculates the uncertainty in the drop radius."""
-        dRdV0 = 1 / self.__sqrt_term() * (-9 * self._eta / (2 * self.g * self.rho))
-        dRdEta = 1 / self.__sqrt_term() * (-9 * self.v_terminal / (2 * self.g * self.rho))
+        dRdV0 = 1 / (2 * self.__sqrt_term()) * (-9 * self._eta / (2 * self.g * self.rho))
+        dRdEta = 1 / (2 * self.__sqrt_term()) * (-9 * self.v_terminal / (2 * self.g * self.rho))
         return math.sqrt((dRdV0 * self.v_terminal_delta) ** 2 + (dRdEta * self._eta_delta) ** 2)
 
     @property

@@ -17,8 +17,8 @@ delta_time = 0.500  # Unit s This is the total uncertainty of each time; but may
 
 # Droplet 1
 
-droplet_1_eta = 1.859 # Unit: Ns/m^2
-droplet_1_delta_eta = 0.003
+droplet_1_eta = 1.859 * 1e-5 # Unit: Ns/m^2
+droplet_1_delta_eta = 0.003 * 1e-5
 
 droplet_1_v0_times = [13.15, 12.37, 10.40, 13.39]
 
@@ -39,8 +39,8 @@ droplet_1_v_up_times = {
 
 # Droplet 1
 
-droplet_2_eta = 1.862   # Unit: Ns/m^2
-droplet_2_delta_eta = 0.001
+droplet_2_eta = 1.862 * 1e-5   # Unit: Ns/m^2
+droplet_2_delta_eta = 0.001 * 1e-5
 
 droplet_2_v0_times = [11.29, 12.06, 12.07, 15.55]
 

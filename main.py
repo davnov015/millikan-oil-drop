@@ -15,6 +15,11 @@ v_terminal_2, v_terminal_un_2, v_terminal_exp_2 = sci(droplet_2_experiment.v_ter
 print(rf"Droplet 1: $v_{{terminal}}$ = {v_terminal_1} $\pm$ {v_terminal_un_1} $m/s * 10^{v_terminal_exp_1:.0f}$")
 print(rf"Droplet 2: $v_{{terminal}}$ = {v_terminal_2:.0f} $\pm$ {v_terminal_un_2:.0f} $m/s * 10^{v_terminal_exp_2:.0f}$")
 
+dr_1, dr_un_1, dr_exp_1 = sci(droplet_1_experiment.drop_radius, droplet_1_experiment.drop_radius_delta)
+dr_2, dr_un_2, dr_exp_2 = sci(droplet_2_experiment.drop_radius, droplet_2_experiment.drop_radius_delta)
+print(rf"Droplet 1: $r_{{drop}}$ = {dr_1} $\pm$ {dr_un_1} $m * 10^{dr_exp_1:.0f}$")
+print(rf"Droplet 2: $r_{{drop}}$ = {dr_2} $\pm$ {dr_un_2} $m * 10^{dr_exp_2:.0f}$")
+
 def apply_curve_fit(experiment: ExperimentCalculations):
     popt_up, pcov_up = curve_fit(linear_fit, experiment.v_up_e_field, experiment.v_up,
                            sigma=experiment.v_up_delta, p0=[1, experiment.v_terminal])

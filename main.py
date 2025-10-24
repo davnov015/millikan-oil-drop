@@ -1,11 +1,10 @@
-import numpy as np
-
 from experiment_calculations import ExperimentCalculations
 from data import droplet_1_v0_times, droplet_1_v_up_times, droplet_1_v_down_times, droplet_1_eta, droplet_1_delta_eta
 from data import droplet_2_v0_times, droplet_2_v_up_times, droplet_2_v_down_times, droplet_2_eta, droplet_2_delta_eta
 from matplotlib import pyplot as plt
 from scipy.optimize import curve_fit
 from util import chi_squared, linear_fit
+import numpy as np
 
 
 droplet_1_experiment = ExperimentCalculations(droplet_1_v0_times, droplet_1_v_down_times, droplet_1_v_up_times, droplet_1_eta, droplet_1_delta_eta)

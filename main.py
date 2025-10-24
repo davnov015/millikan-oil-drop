@@ -1,3 +1,5 @@
+import math
+
 from experiment_calculations import ExperimentCalculations
 from data import droplet_1_v0_times, droplet_1_v_up_times, droplet_1_v_down_times, droplet_1_eta, droplet_1_delta_eta
 from data import droplet_2_v0_times, droplet_2_v_up_times, droplet_2_v_down_times, droplet_2_eta, droplet_2_delta_eta
@@ -116,3 +118,21 @@ ax.set_title("Droplet 2 Velocity vs. E-field Intensity\n"
 
 plt.legend()
 plt.show()
+
+# Slope calculations
+
+s_1_avg = ((popt_up_1[0] / (math.sqrt(pcov_up_1[0][0])) ** 2 + popt_down_1[0] / (math.sqrt(pcov_down_1[0][0])) ** 2)
+           / (1 / (math.sqrt(pcov_up_1[0][0])) ** 2 + 1 / (math.sqrt(pcov_down_1[0][0])) ** 2))
+
+s_1_avg_un = math.sqrt(1 / (1 / (math.sqrt(pcov_up_1[0][0])) ** 2 + 1 / (math.sqrt(pcov_down_1[0][0])) ** 2))
+
+s_2_avg = ((popt_up_2[0] / (math.sqrt(pcov_up_2[0][0])) ** 2 + popt_down_2[0] / (math.sqrt(pcov_down_2[0][0])) ** 2)
+           / (1 / (math.sqrt(pcov_up_2[0][0])) ** 2 + 1 / (math.sqrt(pcov_down_2[0][0])) ** 2))
+
+s_2_avg_un = math.sqrt(1 / (1 / (math.sqrt(pcov_up_2[0][0])) ** 2 + 1 / (math.sqrt(pcov_down_2[0][0])) ** 2))
+
+s_1_avg, s_1_avg_un, s_1_power = sci(s_1_avg, s_1_avg_un)
+s_2_avg, s_2_avg_un, s_2_power = sci(s_2_avg, s_2_avg_un)
+
+print(rf"Droplet 1: $s_{{avg}}$ = {s_1_avg} $\pm$ {s_1_avg_un} $\frac{{m^2}}{{sV}} * 10^{{{s_1_power:.0f}}}$")
+print(rf"Droplet 2: $s_{{avg}}$ = {s_2_avg} $\pm$ {s_2_avg_un} $\frac{{m^2}}{{sV}} * 10^{{{s_2_power:.0f}}}$")

@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from typing import Union
 
 
@@ -21,3 +22,13 @@ def linear_fit(x: Union[float, np.ndarray], m: float, b: float) -> Union[float, 
     :return:
     """
     return m * x + b
+
+def sci(number: float, uncertainty: float):
+    assert number < 1 and uncertainty < 1, "Number and uncertainty must be less than 1"
+    exponent = math.ceil(math.log10(math.fabs(1 / number)))
+    number *= 10 ** exponent
+    uncertainty *= 10 ** exponent
+    unc_exponent = math.ceil(math.log10(math.fabs(1 / uncertainty)))
+    uncertainty = round(uncertainty * 10 ** unc_exponent) / 10 ** unc_exponent
+    number = round(number, unc_exponent)
+    return number, uncertainty, -exponent
